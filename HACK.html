@@ -36,7 +36,7 @@
     <h1 class="text-4xl font-extrabold text-blue-500">Dark Hack</h1>
   </header>
 
-  <div id="timerDisplay" class="text-center text-2xl font-bold text-yellow-400 mb-4">30s</div>
+  <div id="timerDisplay" class="text-center text-2xl font-bold text-yellow-400 mb-4">00:30</div>
 
   <div id="infoBox" class="bg-blue-900 border-2 border-blue-500 rounded-xl p-6 w-full max-w-md mx-auto shadow-lg font-bold text-lg leading-8 mb-4">
     Big/Small: <span id="bigSmall" class="text-red-500">--</span> <span id="bsPercent">(0%)</span><br />
@@ -237,25 +237,24 @@
       }
     }
 
-    function startTimer(duration) {
-      let timeLeft = duration;
-      timerDisplay.textContent = `${timeLeft}s`;
+    function updateTimer() {
+      let now = new Date();
+      let startHour = 5, startMinute = 30;
+      let startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute, 0);
+      let elapsedSeconds = Math.floor((now - startTime) / 1000);
+      if (elapsedSeconds < 0) {
+        startTime.setDate(startTime.getDate() - 1);
+        elapsedSeconds = Math.floor((now - startTime) / 1000);
+      }
+      let remainingSeconds = 30 - (elapsedSeconds % 30);
+      timerDisplay.textContent = `00:${String(remainingSeconds).padStart(2, '0')}`;
 
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        timerDisplay.textContent = `${timeLeft}s`;
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          fetchAndAnalyzeRepeatedly();
-          startTimer(duration);
-        }
-      }, 1000);
+      setTimeout(updateTimer, 1000);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       fetchAndAnalyzeRepeatedly();
-      startTimer(30);
+      updateTimer();
     });
   </script>
 </body>
