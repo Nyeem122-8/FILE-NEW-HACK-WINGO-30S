@@ -1,373 +1,262 @@
 <!DOCTYPE html>
-	<html lang="bn">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ফটো স্লাইড</title>
-  <style>
-    #imageBox {
-      width: 390px; /* স্কয়ারের প্রস্থ */
-      height: 190px; /* স্কয়ারের উচ্চতা */
-      margin: 50px auto;
-      border: 2px solid black;
-      background-size: cover;
-      background-position: center;
-    }
-  </style>
-</head>
-<body>
-
-  
-
-  <script>
-    const images = [
-      "image1.jpg", // প্রথম ছবি লিঙ্ক দিন
-      "image2.jpg", // দ্বিতীয় ছবি লিঙ্ক দিন
-      "image3.jpg"  // তৃতীয় ছবি লিঙ্ক দিন
-    ];
-
-    let currentIndex = 0;
-
-    function changeImage() {
-      document.getElementById('imageBox').style.backgroundImage = `url(${images[currentIndex]})`;
-      currentIndex = (currentIndex + 1) % images.length; // ৫ সেকেন্ড পর পর ছবি পরিবর্তন হবে
-    }
-
-    setInterval(changeImage, 5000); // প্রতি ৫ সেকেন্ড পর পর ছবি পরিবর্তন
-    changeImage(); // প্রথম ছবি লোড হবে
-  </script>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dark Hack</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dark Hack 2.4</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #333;
-      color: #FF0000;
-    }
-    .logo-container {
-      text-align: center;
-      margin-top: 10px;
-    }
-    .logo-container img {
-      max-width: 50%;
-      height: auto;
-    }
-    .result-box {
-      font-size: 30px;
-      font-weight: bold;
-      padding: 20px;
-      border: 2px solid #ff0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 150px;
-      height: 50px;
-      margin: 20px auto;
-      background: #333;
-      color: #ff0;
-      box-shadow: 30px 10px 100px #FF0000;
-    }
-    .category-percentages {
-      font-size: 20px;
-      font-weight: normal;
-      color: #ff0;
-      padding: 20px;
-      background: #444;
-      margin: 20px auto;
-      width: 150px;
-      border: 2px solid #ff0;
-      text-align: center;
-    }
-    .input-container {
-      margin: 10px;
-    }
-    input {
-      margin: 5px;
-      padding: 10px;
-      width: 250px;
-      font-size: 20px;
-      background: #222;
-      color: #0f0;
-      border: 2px solid #FF0000;
-      text-align: center;
-    }
-    .custom-keyboard {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: center;
-    }
-    .keyboard-row {
-      display: flex;
-      gap: 10px;
-    }
-    .custom-keyboard button {
-      padding: 20px;
-      font-size: 20px;
-      background-color: #444;
+      background-color: #0d1117;
+      font-family: 'Courier New', monospace;
       color: #fff;
-      border: none;
-      cursor: pointer;
-      width: 60px;
-      height: 60px;
-      border-radius: 10px;
+      padding: 2rem;
     }
-    .custom-keyboard button:hover {
-      background-color: #666;
+    .windows-box {
+      background-color: #1e293b;
+      padding: 1rem;
+      margin-top: 2rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 0 10px #3b82f6;
+      max-height: 300px;
+      overflow-y: auto;
     }
-    .clear-button {
-      width: 180px;
-      background-color: #FF0000;
+    .windows-entry {
+      padding: 0.5rem;
+      border-bottom: 1px solid #334155;
+      font-size: 0.95rem;
     }
-    .clear-button {
-      width: 980px;
-      height: 690px;
-      background-color: #16C91A;
-      color: #16C9FF;
-      font-size: 290px;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    /* YouTube Video Embed Style */
-    .youtube-embed {
-      margin-top: 20px;
-      width: 200px;
-      height: 300px;
-      background-color: #222;
-      border: 2px solid #FF0000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .youtube-embed iframe {
-      width: 100%;
-      height: 100%;
-    }
-    .container {
-      width: 50%;
-      height: 70px;
-      border: 2px solid black;
-      padding: 10px;
-      overflow: auto;
-      margin: auto;
-      background-color: #333;
-      font-size: 22px; /*    */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-    pre {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    button {
-      background-color: #0088cc;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #005f8d;
-    }
+    .win { color: #22c55e; }
+    .loss { color: #ef4444; }
+    .highlight { font-weight: bold; }
   </style>
 </head>
 <body>
-<div id="imageBox"></div>
+  <header class="text-center mb-6">
+    <h1 class="text-4xl font-extrabold text-blue-500">Dark Hack</h1>
+  </header>
+
+  <div id="timerDisplay" class="text-center text-2xl font-bold text-yellow-400 mb-4">30s</div>
+
+  <div id="infoBox" class="bg-blue-900 border-2 border-blue-500 rounded-xl p-6 w-full max-w-md mx-auto shadow-lg font-bold text-lg leading-8 mb-4">
+    Big/Small: <span id="bigSmall" class="text-red-500">--</span> <span id="bsPercent">(0%)</span><br />
+    Red/Green: <span id="redGreen" class="text-red-500">--</span><br />
+    Number: <span id="numbersBox"></span><br />
   </div>
 
-  <!-- Hack System Section -->
-  <div id="hack-system" style="display: block;">
-    <div id="result-box" class="result-box">Result</div>
-    <div id="category-percentages" class="category-percentages"></div>
-    <div class="custom-keyboard">
-      <!-- Upper Row -->
-      <div class="keyboard-row">
-        <button onclick="addNumber(1)">1</button>
-        <button onclick="addNumber(2)">2</button>
-        <button onclick="addNumber(3)">3</button>
-        <button onclick="addNumber(4)">4</button>
-        <button onclick="addNumber(5)">5</button>
-      </div>
-      <!-- Lower Row -->
-      <div class="keyboard-row">
-        <button onclick="addNumber(6)">6</button>
-        <button onclick="addNumber(7)">7</button> 
-        <button onclick="addNumber(8)">8</button>
-        <button onclick="addNumber(9)">9</button>
-        <button onclick="addNumber(0)">0</button>
-      </div>
-
-      <button class="clear-button" onclick="clearInput()">Clear</button>
-      <!-- YouTube Embed -->
-      <div class="youtube-embed">
-        <iframe src="https://hgzy.in/#/register?invitationCode=81132359432" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-      <div id="dataBox" class="container">
-        <p>white...</p>
-      </div>
-      <div class="input-container">
-        <input type="text" id="input1" placeholder="dark hack" readonly>
-        <input type="text" id="input2" placeholder="dark hack" readonly>
-        <input type="text" id="input3" placeholder="dark hack" readonly>
-        <input type="text" id="input4" placeholder="dark hack" readonly>
-        <input type="text" id="input5" placeholder="dark hack" readonly>
-        <input type="text" id="input6" placeholder="dark hack" readonly>
-      </div>
-    </div>
-  </div>
+  <div id="gameDataContainer" class="max-w-md mx-auto mb-6"></div>
+  <div id="windowsBox" class="windows-box max-w-md mx-auto"></div>
 
   <script>
-    // Device ID Generator Function
-    function generateDeviceId() {
-      const userAgent = navigator.userAgent;
-      const screenWidth = screen.width;
-      const screenHeight = screen.height;
-      const language = navigator.language;
-      
-      const rawData = `${userAgent}-${screenWidth}x${screenHeight}-${language}`;
-      let hash = 0;
-      for (let i = 0; i < rawData.length; i++) {
-        const char = rawData.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash |= 0; // Convert to 32-bit integer
+    const bigSmallEl = document.getElementById('bigSmall');
+    const redGreenEl = document.getElementById('redGreen');
+    const numbersBox = document.getElementById('numbersBox');
+    const bsPercent = document.getElementById('bsPercent');
+    const gameDataContainer = document.getElementById('gameDataContainer');
+    const windowsBox = document.getElementById('windowsBox');
+    const timerDisplay = document.getElementById('timerDisplay');
+
+    let alreadyAnnounced = false;
+    let timerInterval;
+
+    function getFullNameAndShortForm(type, value) {
+      if (type === 'bs') {
+        if (value === 'BIG') return ['Big'];
+        if (value === 'SMALL') return ['Small'];
+        return ['Skip'];
       }
-      const uniqueId = `1-0-2-2-4-u-${Math.abs(hash).toString(16)}-a-2-2-4`;
-      document.getElementById('device-id').textContent = uniqueId;
+      if (type === 'color') {
+        if (value === 'red') return ['Red'];
+        if (value === 'green') return ['Green'];
+        return ['Skip'];
+      }
+      return ['-'];
     }
 
-    var dataset = [];
-    var currentInput = 0;
-
-    // Fetching the dataset
-    fetch('dataset.json')
-      .then(response => response.json())
-      .then(data => { dataset = data; })
-      .catch(error => { console.error('Error loading dataset:', error); });
-
-    function numberToCategory(num) {
-      if (num == 6 || num == 8) return "BR";
-      if (num == 5 || num == 7 || num == 9) return "BG";
-      if (num == 1 || num == 3) return "SG";
-      if (num == 2 || num == 4 || num == 0) return "SR";
-      return "";
+    function detectCustomPattern(list) {
+      if (list.length < 3) return null;
+      const numbers = list.map(i => Number(i.number));
+      const colors = list.map(i => i.colour.toLowerCase().split(',')[0]);
+      const lastIndex = numbers.length - 1;
+      const lastNum = numbers[lastIndex];
+      const secondLastNum = numbers[lastIndex - 1];
+      if (lastNum <= 4 && secondLastNum >= 5) {
+        return { bigSmallPattern: 'BIG', confidenceBS: 100 };
+      }
+      if (lastNum <= 4) {
+        const lastColor = colors[lastIndex];
+        if (lastColor === 'green') return { topColor: 'red', confidenceColor: 100 };
+        else if (lastColor === 'red') return { topColor: 'green', confidenceColor: 100 };
+      }
+      return null;
     }
 
-    function processData() {
-      let searchValues = [];
-      for (let i = 6; i >= 1; i--) {
-        let val = document.getElementById("input" + i).value.trim();
-        if (val !== "") {
-          searchValues.push(numberToCategory(parseInt(val)));
-        }
-      }
+    function analyze(dataList) {
+      const numbers = dataList.map(d => Number(d.number));
+      const freq = {};
+      numbers.forEach(n => freq[n] = (freq[n] || 0) + 1);
+      const sortedFreq = Object.entries(freq).sort((a,b) => b[1] - a[1]);
+      const top3Numbers = sortedFreq.slice(0,3).map(e => e[0]);
 
-      if (searchValues.length !== 6) {
-        document.getElementById("result-box").innerText = "Error!";
-        document.getElementById("category-percentages").innerText = "";
-        return;
-      }
+      let bigCount = 0, smallCount = 0;
+      numbers.forEach(n => n <= 4 ? smallCount++ : bigCount++);
 
-      var matchedResults = [];
-      for (var i = 0; i <= dataset.length - 7; i++) {
-        if (searchValues.every((v, idx) => dataset[i + idx] === v)) {
-          matchedResults.push(dataset[i + 6]);
-        }
-      }
+      let bigSmallPattern = 'SKIP';
+      if(bigCount > smallCount) bigSmallPattern = 'BIG';
+      else if(smallCount > bigCount) bigSmallPattern = 'SMALL';
 
-      if (matchedResults.length === 0) {
-        document.getElementById("result-box").innerText = "No results found";
-        document.getElementById("category-percentages").innerText = "";
-        return;
-      }
+      const colorCount = { red: 0, green: 0 };
+      dataList.forEach(item => {
+        item.colour.toLowerCase().split(',').forEach(c => {
+          if (c === 'red' || c === 'green') colorCount[c]++;
+        });
+      });
 
+      let topColor = 'skip';
+      if(colorCount.red > colorCount.green) topColor = 'red';
+      else if(colorCount.green > colorCount.red) topColor = 'green';
 
+      let confidenceBS = 70;
+      const diff = Math.abs(bigCount - smallCount);
+      if(diff >= 3) confidenceBS = 90;
+      else if(diff === 2) confidenceBS = 82;
+      else if(diff === 1) confidenceBS = 75;
+      if(sortedFreq[0][1] >= 3) confidenceBS += 5;
+      if(confidenceBS > 95) confidenceBS = 95;
 
+      let confidenceColor = 70;
+      const colorDiff = Math.abs(colorCount.red - colorCount.green);
+      if(colorDiff >= 6) confidenceColor = 95;
+      else if(colorDiff >= 4) confidenceColor = 88;
+      else if(colorDiff >= 2) confidenceColor = 80;
+      else if(colorDiff === 0) confidenceColor = 50;
 
-      var countBR = matchedResults.filter(num => num === "BR").length;
-      var countBG = matchedResults.filter(num => num === "BG").length;
-      var countSG = matchedResults.filter(num => num === "SG").length;
-      var countSR = matchedResults.filter(num => num === "SR").length;
-
-      var total = matchedResults.length;
-
-      var percentBR = (countBR / total) * 25;
-      var percentBG = (countBG / total) * 75;
-      var percentSG = (countSG / total) * 50;
-      var percentSR = (countSR / total) * 80;
-
-      var maxPercent = Math.max(percentBR, percentBG, percentSG, percentSR);
-
-      var normalizedBR = (percentBR / maxPercent) * 25;
-      var normalizedBG = (percentBG / maxPercent) * 75;
-      var normalizedSG = (percentSG / maxPercent) * 50;
-      var normalizedSR = (percentSR / maxPercent) * 80;
-
-      var dominantCategory, dominantValue;
-      if (normalizedBR >= normalizedBG && normalizedBR >= normalizedSG && normalizedBR >= normalizedSR) {
-        dominantCategory = "[🔴]BIG[🔴] ➏ ➑";
-        dominantValue = normalizedBR;
-      } else if (normalizedBG >= normalizedBR && normalizedBG >= normalizedSG && normalizedBG >= normalizedSR) {
-        dominantCategory = "[🟢]BIG[🟢] ➎ ➐ ➒";
-        dominantValue = normalizedBG;
-      } else if (normalizedSG >= normalizedBR && normalizedSG >= normalizedBG && normalizedSG >= normalizedSR) {
-        dominantCategory = "[🟢]SMALL[🟢] ➊ ➌";
-        dominantValue = normalizedSG;
-      } else {
-        dominantCategory = "[🔴]SMALL[🔴] ⓿ ➋ ➍";
-        dominantValue = normalizedSR;
-      }
-
-      var displayValue = dominantValue >= 70 ? 100 : dominantValue.toFixed(2);
-
-      document.getElementById("result-box").innerText = `${dominantCategory}`;
-      document.getElementById("category-percentages").innerText = `${displayValue}%`;
+      return { bigSmallPattern, topColor, top3Numbers, confidenceBS, confidenceColor };
     }
 
-    function addNumber(num) {
-      if (currentInput < 6) {
-        document.getElementById("input" + (currentInput + 1)).value = num;
-        currentInput++;
-        processData();
-      }
+    function renderInfo(analysis) {
+      const [bsFull] = getFullNameAndShortForm('bs', analysis.bigSmallPattern);
+      const [colorFull] = getFullNameAndShortForm('color', analysis.topColor);
+
+      bigSmallEl.textContent = `${bsFull}`;
+      bsPercent.textContent = `(${analysis.confidenceBS}%)`;
+
+      redGreenEl.textContent = `${colorFull} (${analysis.confidenceColor}%)`;
+      redGreenEl.className = '';
+      redGreenEl.classList.add(analysis.topColor === 'red' ? 'text-red-500' : 'text-green-400');
+
+      numbersBox.innerHTML = '';
+      (analysis.top3Numbers || []).forEach(num => {
+        const span = document.createElement('span');
+        span.textContent = num;
+        span.className = 'inline-block bg-blue-600 px-2 py-1 rounded-lg text-lg font-extrabold mr-2';
+        numbersBox.appendChild(span);
+      });
     }
 
-    function clearInput() {
-      for (var i = 1; i <= 6; i++) {
-        document.getElementById("input" + i).value = "";
-      }
-      currentInput = 0;
-      document.getElementById("result-box").innerText = "Result";
-      document.getElementById("category-percentages").innerText = "";
+    function appendToWindows(issue, actualNumber, actualColor, pred) {
+      const actualBS = actualNumber <= 4 ? 'SMALL' : 'BIG';
+      const matchBS = pred.bigSmallPattern === actualBS;
+      const matchColor = pred.topColor === actualColor;
+
+      const periodShort = issue.toString().slice(-4);
+
+      const line = document.createElement('div');
+      line.innerHTML = `
+        ${periodShort} | ${actualNumber} | ${pred.bigSmallPattern} | 
+        <span class="${matchBS ? 'win' : 'loss'}">${matchBS ? '✅' : '❌'}</span> |
+        ${pred.topColor.charAt(0).toUpperCase() + pred.topColor.slice(1)} | 
+        <span class="${matchColor ? 'win' : 'loss'}">${matchColor ? '✅' : '❌'}</span>
+      `;
+      windowsBox.prepend(line);
     }
 
-			window.onload = function() {
-            let dataBox = document.getElementById("dataBox");
+    function renderTable(list) {
+      gameDataContainer.innerHTML = '';
+      const table = document.createElement('table');
+      table.className = 'w-full text-sm text-center bg-gray-800';
+      table.innerHTML = `
+        <thead class="bg-blue-600 text-black">
+          <tr><th>Issue</th><th>Number</th><th>Colour</th></tr>
+        </thead>
+        <tbody>
+          ${list.map(item => `
+            <tr class="hover:bg-gray-600">
+              <td>${item.issueNumber}</td>
+              <td>${item.number}</td>
+              <td>${item.colour}</td>
+            </tr>`).join('')}
+        </tbody>`;
+      gameDataContainer.appendChild(table);
+    }
 
-            fetch("https://raw.githubusercontent.com/Nyeem122-8/e-password-premium-/main/Pa.text")
-            .then(response => response.text())
-            .then(data => {
-                dataBox.innerHTML = "<pre>" + data + "</pre>";
+    async function fetchAndAnalyzeRepeatedly(repeats = 7) {
+      let finalResult = null, bestList = [], maxConfidence = 0;
+
+      for (let i = 0; i < repeats; i++) {
+        try {
+          const res = await fetch('https://crbbb.com/api/webapi/GetNoaverageEmerdList', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+            body: JSON.stringify({
+              pageSize: 10,
+              pageNo: 1,
+              typeId: 30,
+              language: 0,
+              random: "62d02162c2234c64b57aa4188c5810b2",
+              signature: "9BF7A245709AA054E231D75C404C6527",
+              timestamp: Math.floor(Date.now() / 1000)
             })
-            .catch(error => {
-                dataBox.innerHTML = "ডাটা লোড করতে ব্যর্থ হয়েছে!";
-            });
-        };
+          });
+          const data = await res.json();
+          const list = data?.data?.list;
+          if (!list) continue;
 
+          const custom = detectCustomPattern(list);
+          let result = analyze(list);
+          if (custom) result = { ...result, ...custom };
 
-    // Generate the unique Device ID on page load
-    generateDeviceId();
+          const conf = result.confidenceBS + result.confidenceColor;
+          if (conf > maxConfidence) {
+            maxConfidence = conf;
+            finalResult = result;
+            bestList = list;
+          }
+          if (result.confidenceBS >= 100 || result.confidenceColor >= 100) break;
+
+        } catch (err) { console.error("Fetch error", err); }
+      }
+
+      if (finalResult && bestList.length) {
+        renderInfo(finalResult);
+        renderTable(bestList);
+        const marketLatest = bestList[0];
+        const actualNumber = Number(marketLatest.number);
+        const actualColor = marketLatest.colour.toLowerCase().split(',')[0];
+        appendToWindows(marketLatest.issueNumber, actualNumber, actualColor, finalResult);
+      }
+    }
+
+    function startTimer(duration) {
+      let timeLeft = duration;
+      timerDisplay.textContent = `${timeLeft}s`;
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          fetchAndAnalyzeRepeatedly();
+          startTimer(duration);
+        }
+      }, 1000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchAndAnalyzeRepeatedly();
+      startTimer(30);
+    });
   </script>
 </body>
 </html>
