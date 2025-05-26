@@ -36,7 +36,12 @@
     <h1 class="text-4xl font-extrabold text-blue-500">Dark Hack</h1>
   </header>
 
-  <div id="timerDisplay" class="text-center text-2xl font-bold text-yellow-400 mb-4">00:30</div>
+  <!-- Updated Timer Box -->
+  <div class="text-center text-2xl font-bold text-yellow-400 mb-4">
+    <div class="timer-box">
+      <div class="timer-text" id="timer">00:30</div>
+    </div>
+  </div>
 
   <div id="infoBox" class="bg-blue-900 border-2 border-blue-500 rounded-xl p-6 w-full max-w-md mx-auto shadow-lg font-bold text-lg leading-8 mb-4">
     Big/Small: <span id="bigSmall" class="text-red-500">--</span> <span id="bsPercent">(0%)</span><br />
@@ -54,10 +59,6 @@
     const bsPercent = document.getElementById('bsPercent');
     const gameDataContainer = document.getElementById('gameDataContainer');
     const windowsBox = document.getElementById('windowsBox');
-    const timerDisplay = document.getElementById('timerDisplay');
-
-    let alreadyAnnounced = false;
-    let timerInterval;
 
     function getFullNameAndShortForm(type, value) {
       if (type === 'bs') {
@@ -163,10 +164,10 @@
 
       const line = document.createElement('div');
       line.innerHTML = `
-        ${periodShort} | ${actualNumber} | ${pred.bigSmallPattern} | 
-        <span class="${matchBS ? 'win' : 'loss'}">${matchBS ? '✅' : '❌'}</span> |
-        ${pred.topColor.charAt(0).toUpperCase() + pred.topColor.slice(1)} | 
-        <span class="${matchColor ? 'win' : 'loss'}">${matchColor ? '✅' : '❌'}</span>
+        ${periodShort} | ${actualNumber} |${pred.bigSmallPattern}| 
+        <span class="${matchBS ? 'win' : 'loss'}">${matchBS ? '✅' : '❌'}</span>
+        |${pred.topColor.charAt(0).toUpperCase() + pred.topColor.slice(1)}| 
+        <span class="${matchColor ? 'win' : 'loss'}">${matchColor ? '✅' : '❌'}</span> |
       `;
       windowsBox.prepend(line);
     }
@@ -190,8 +191,12 @@
       gameDataContainer.appendChild(table);
     }
 
-    async function fetchAndAnalyzeRepeatedly(repeats = 7) {
+    async function fetchAndAnalyzeRepeatedly(repeats = 10) {
       let finalResult = null, bestList = [], maxConfidence = 0;
+
+      // কনফিডেন্স ১০০% এবং ৯৫% গুলো গোনা হবে
+      let count100 = 0;
+      let count95 = 0;
 
       for (let i = 0; i < repeats; i++) {
         try {
@@ -216,12 +221,30 @@
           let result = analyze(list);
           if (custom) result = { ...result, ...custom };
 
-          const conf = result.confidenceBS + result.confidenceColor;
+          // কনফিডেন্সের মোট যোগফল
+          let conf = result.confidenceBS + result.confidenceColor;
+
+          // কনফিডেন্স ১০০% হলে কাউন্ট বাড়াও
+          if(result.confidenceBS === 100 || result.confidenceColor === 100) count100++;
+          else if(result.confidenceBS >= 95 || result.confidenceColor >= 95) count95++;
+
+          // count100 বা count95 ৫ বা ৬ হলে ফাইনাল ১০০% দেখাও
+          if(count100 >= 5 || count95 >= 6) {
+            result.confidenceBS = 100;
+            result.confidenceColor = 100;
+            finalResult = result;
+            bestList = list;
+            break;
+          }
+
+          // অন্যথায় যেই maxConfidence সবচেয়ে বেশি
           if (conf > maxConfidence) {
             maxConfidence = conf;
             finalResult = result;
             bestList = list;
           }
+
+          // ১০০ পার্সেন্ট হলে লুপ বন্ধ করো
           if (result.confidenceBS >= 100 || result.confidenceColor >= 100) break;
 
         } catch (err) { console.error("Fetch error", err); }
@@ -237,6 +260,7 @@
       }
     }
 
+    // New Timer Code (Replacing startTimer)
     function updateTimer() {
       let now = new Date();
       let startHour = 5, startMinute = 30;
@@ -247,14 +271,16 @@
         elapsedSeconds = Math.floor((now - startTime) / 1000);
       }
       let remainingSeconds = 30 - (elapsedSeconds % 30);
-      timerDisplay.textContent = `00:${String(remainingSeconds).padStart(2, '0')}`;
-
+      document.getElementById("timer").innerText = `00:${String(remainingSeconds).padStart(2, '0')}`;
+      if (remainingSeconds === 30) {
+        fetchAndAnalyzeRepeatedly();
+      }
       setTimeout(updateTimer, 1000);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      fetchAndAnalyzeRepeatedly();
       updateTimer();
+      fetchAndAnalyzeRepeatedly();
     });
   </script>
 </body>
