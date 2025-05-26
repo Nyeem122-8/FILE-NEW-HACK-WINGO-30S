@@ -59,6 +59,8 @@
 
     let lastIssueNumber = null;
     let lastShownIssue = null;
+    let previousPrediction = null;
+    let nextPrediction = null;
 
     function analyze(dataList) {
       const numbers = dataList.map(d => Number(d.number));
@@ -93,10 +95,13 @@
     }
 
     function renderInfo(result) {
-      bigSmallEl.textContent = result.bigSmallPattern;
+      const bsText = result.bigSmallPattern === 'SKIP' ? '🚫' : result.bigSmallPattern;
+      const colorText = result.topColor === 'skip' ? '🚫' : result.topColor.toUpperCase();
+
+      bigSmallEl.textContent = bsText;
       bsPercent.textContent = `(${result.confidenceBS}%)`;
-      redGreenEl.textContent = `${result.topColor.toUpperCase()} (${result.confidenceColor}%)`;
-      redGreenEl.className = result.topColor === 'red' ? 'text-red-500' : 'text-green-400';
+      redGreenEl.textContent = `${colorText} (${result.confidenceColor}%)`;
+      redGreenEl.className = result.topColor === 'red' ? 'text-red-500' : result.topColor === 'green' ? 'text-green-400' : '';
 
       numbersBox.innerHTML = '';
       result.top3Numbers.forEach(num => {
@@ -124,13 +129,16 @@
       lastShownIssue = issue;
 
       const bs = number <= 4 ? 'SMALL' : 'BIG';
-      const matchBS = bs === prediction.bigSmallPattern;
-      const matchColor = color === prediction.topColor;
+      const bsMatch = bs === prediction.bigSmallPattern;
+      const colorMatch = color === prediction.topColor;
+
+      const bsResult = prediction.bigSmallPattern === 'SKIP' ? '🚫' : `${bs} <span class="${bsMatch ? 'win' : 'loss'}">${bsMatch ? '✔' : '✖'}</span>`;
+      const colorResult = prediction.topColor === 'skip' ? '🚫' : `${color} <span class="${colorMatch ? 'win' : 'loss'}">${colorMatch ? '✔' : '✖'}</span>`;
 
       const div = document.createElement('div');
       const shortIssue = issue.toString().slice(-4);
       div.className = 'windows-entry';
-      div.innerHTML = `${shortIssue} | ${number} | ${bs} <span class="${matchBS ? 'win' : 'loss'}">${matchBS ? '✔' : '✖'}</span> | ${color} <span class="${matchColor ? 'win' : 'loss'}">${matchColor ? '✔' : '✖'}</span>`;
+      div.innerHTML = `${shortIssue} | ${number} | ${bsResult} | ${colorResult}`;
       windowsBox.prepend(div);
     }
 
@@ -154,17 +162,23 @@
         const list = json?.data?.list;
         if (!list?.length) return;
 
-        const currentIssue = list[0].issueNumber;
-        if (currentIssue === lastIssueNumber) return;
-        lastIssueNumber = currentIssue;
+        const latest = list[0];
+        const currentIssue = latest.issueNumber;
+        const color = latest.colour.toLowerCase().split(',')[0];
+        const number = Number(latest.number);
 
-        const prediction = analyze(list);
-        renderInfo(prediction);
+        if (currentIssue !== lastIssueNumber) {
+          if (previousPrediction) {
+            appendToWindows(currentIssue, number, color, previousPrediction);
+          }
+          lastIssueNumber = currentIssue;
+          previousPrediction = nextPrediction || analyze(list);
+          nextPrediction = analyze(list);
+          renderInfo(nextPrediction);
+        }
+
         renderTable(list);
 
-        const latest = list[0];
-        const color = latest.colour.toLowerCase().split(',')[0];
-        appendToWindows(latest.issueNumber, Number(latest.number), color, prediction);
       } catch (error) {
         console.error("Fetch error:", error);
       }
