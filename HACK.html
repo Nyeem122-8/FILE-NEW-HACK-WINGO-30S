@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dark Hack 2.4</title>
+  <title>Dark Hack Bangladesh</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     body {
@@ -36,11 +36,8 @@
     <h1 class="text-4xl font-extrabold text-blue-500">Dark Hack</h1>
   </header>
 
-  <!-- Updated Timer Box -->
   <div class="text-center text-2xl font-bold text-yellow-400 mb-4">
-    <div class="timer-box">
-      <div class="timer-text" id="timer">00:30</div>
-    </div>
+    <div id="timer">00:30</div>
   </div>
 
   <div id="infoBox" class="bg-blue-900 border-2 border-blue-500 rounded-xl p-6 w-full max-w-md mx-auto shadow-lg font-bold text-lg leading-8 mb-4">
@@ -60,92 +57,64 @@
     const gameDataContainer = document.getElementById('gameDataContainer');
     const windowsBox = document.getElementById('windowsBox');
 
-    function getFullNameAndShortForm(type, value) {
-      if (type === 'bs') {
-        if (value === 'BIG') return ['Big'];
-        if (value === 'SMALL') return ['Small'];
-        return ['Skip'];
-      }
-      if (type === 'color') {
-        if (value === 'red') return ['Red'];
-        if (value === 'green') return ['Green'];
-        return ['Skip'];
-      }
-      return ['-'];
+    let lastIssueNumber = null;
+
+    function getFullName(type, value) {
+      if (type === 'bs') return value === 'BIG' ? 'Big' : value === 'SMALL' ? 'Small' : '--';
+      if (type === 'color') return value === 'red' ? 'Red' : value === 'green' ? 'Green' : '--';
+      return '--';
     }
 
     function detectCustomPattern(list) {
       if (list.length < 3) return null;
       const numbers = list.map(i => Number(i.number));
       const colors = list.map(i => i.colour.toLowerCase().split(',')[0]);
-      const lastIndex = numbers.length - 1;
-      const lastNum = numbers[lastIndex];
-      const secondLastNum = numbers[lastIndex - 1];
-      if (lastNum <= 4 && secondLastNum >= 5) {
-        return { bigSmallPattern: 'BIG', confidenceBS: 100 };
-      }
-      if (lastNum <= 4) {
-        const lastColor = colors[lastIndex];
-        if (lastColor === 'green') return { topColor: 'red', confidenceColor: 100 };
-        else if (lastColor === 'red') return { topColor: 'green', confidenceColor: 100 };
+      const last = numbers[numbers.length - 1], secondLast = numbers[numbers.length - 2];
+      if (last <= 4 && secondLast >= 5) return { bigSmallPattern: 'BIG', confidenceBS: 100 };
+      if (last <= 4) {
+        if (colors[colors.length - 1] === 'green') return { topColor: 'red', confidenceColor: 100 };
+        if (colors[colors.length - 1] === 'red') return { topColor: 'green', confidenceColor: 100 };
       }
       return null;
     }
 
     function analyze(dataList) {
       const numbers = dataList.map(d => Number(d.number));
-      const freq = {};
-      numbers.forEach(n => freq[n] = (freq[n] || 0) + 1);
-      const sortedFreq = Object.entries(freq).sort((a,b) => b[1] - a[1]);
-      const top3Numbers = sortedFreq.slice(0,3).map(e => e[0]);
+      const freq = {}, colorCount = { red: 0, green: 0 };
+      let big = 0, small = 0;
 
-      let bigCount = 0, smallCount = 0;
-      numbers.forEach(n => n <= 4 ? smallCount++ : bigCount++);
+      numbers.forEach(n => {
+        freq[n] = (freq[n] || 0) + 1;
+        n <= 4 ? small++ : big++;
+      });
 
-      let bigSmallPattern = 'SKIP';
-      if(bigCount > smallCount) bigSmallPattern = 'BIG';
-      else if(smallCount > bigCount) bigSmallPattern = 'SMALL';
-
-      const colorCount = { red: 0, green: 0 };
-      dataList.forEach(item => {
-        item.colour.toLowerCase().split(',').forEach(c => {
+      dataList.forEach(d => {
+        d.colour.toLowerCase().split(',').forEach(c => {
           if (c === 'red' || c === 'green') colorCount[c]++;
         });
       });
 
-      let topColor = 'skip';
-      if(colorCount.red > colorCount.green) topColor = 'red';
-      else if(colorCount.green > colorCount.red) topColor = 'green';
+      const sorted = Object.entries(freq).sort((a,b) => b[1]-a[1]);
+      const top3 = sorted.slice(0, 3).map(e => e[0]);
+      const diff = Math.abs(big - small);
+      let confidenceBS = diff >= 3 ? 90 : diff === 2 ? 82 : diff === 1 ? 75 : 70;
+      if (sorted[0][1] >= 3) confidenceBS += 5;
+      if (confidenceBS > 95) confidenceBS = 95;
 
-      let confidenceBS = 70;
-      const diff = Math.abs(bigCount - smallCount);
-      if(diff >= 3) confidenceBS = 90;
-      else if(diff === 2) confidenceBS = 82;
-      else if(diff === 1) confidenceBS = 75;
-      if(sortedFreq[0][1] >= 3) confidenceBS += 5;
-      if(confidenceBS > 95) confidenceBS = 95;
-
-      let confidenceColor = 70;
       const colorDiff = Math.abs(colorCount.red - colorCount.green);
-      if(colorDiff >= 6) confidenceColor = 95;
-      else if(colorDiff >= 4) confidenceColor = 88;
-      else if(colorDiff >= 2) confidenceColor = 80;
-      else if(colorDiff === 0) confidenceColor = 50;
+      let confidenceColor = colorDiff >= 6 ? 95 : colorDiff >= 4 ? 88 : colorDiff >= 2 ? 80 : 50;
 
-      return { bigSmallPattern, topColor, top3Numbers, confidenceBS, confidenceColor };
+      let bigSmallPattern = big > small ? 'BIG' : small > big ? 'SMALL' : 'SKIP';
+      let topColor = colorCount.red > colorCount.green ? 'red' : colorCount.green > colorCount.red ? 'green' : 'skip';
+
+      return { bigSmallPattern, topColor, top3Numbers: top3, confidenceBS, confidenceColor };
     }
 
     function renderInfo(analysis) {
-      const [bsFull] = getFullNameAndShortForm('bs', analysis.bigSmallPattern);
-      const [colorFull] = getFullNameAndShortForm('color', analysis.topColor);
-
-      bigSmallEl.textContent = `${bsFull}`;
+      bigSmallEl.textContent = getFullName('bs', analysis.bigSmallPattern);
       bsPercent.textContent = `(${analysis.confidenceBS}%)`;
-
-      redGreenEl.textContent = `${colorFull} (${analysis.confidenceColor}%)`;
-      redGreenEl.className = '';
-      redGreenEl.classList.add(analysis.topColor === 'red' ? 'text-red-500' : 'text-green-400');
-
+      redGreenEl.textContent = `${getFullName('color', analysis.topColor)} (${analysis.confidenceColor}%)`;
+      redGreenEl.className = analysis.topColor === 'red' ? 'text-red-500' : 'text-green-400';
       numbersBox.innerHTML = '';
       (analysis.top3Numbers || []).forEach(num => {
         const span = document.createElement('span');
@@ -155,20 +124,16 @@
       });
     }
 
-    function appendToWindows(issue, actualNumber, actualColor, pred) {
-      const actualBS = actualNumber <= 4 ? 'SMALL' : 'BIG';
-      const matchBS = pred.bigSmallPattern === actualBS;
-      const matchColor = pred.topColor === actualColor;
-
-      const periodShort = issue.toString().slice(-4);
-
+    function appendToWindows(issue, number, color, pred) {
+      const bs = number <= 4 ? 'SMALL' : 'BIG';
+      const c = color;
+      const matchBS = pred.bigSmallPattern === bs;
+      const matchColor = pred.topColor === c;
       const line = document.createElement('div');
-      line.innerHTML = `
-        ${periodShort} | ${actualNumber} |${pred.bigSmallPattern}| 
+      const short = issue.toString().slice(-4);
+      line.innerHTML = `${short} | ${number} |${pred.bigSmallPattern}| 
         <span class="${matchBS ? 'win' : 'loss'}">${matchBS ? '✅' : '❌'}</span>
-        |${pred.topColor.charAt(0).toUpperCase() + pred.topColor.slice(1)}| 
-        <span class="${matchColor ? 'win' : 'loss'}">${matchColor ? '✅' : '❌'}</span> |
-      `;
+        |${pred.topColor}| <span class="${matchColor ? 'win' : 'loss'}">${matchColor ? '✅' : '❌'}</span>`;
       windowsBox.prepend(line);
     }
 
@@ -177,26 +142,16 @@
       const table = document.createElement('table');
       table.className = 'w-full text-sm text-center bg-gray-800';
       table.innerHTML = `
-        <thead class="bg-blue-600 text-black">
-          <tr><th>Issue</th><th>Number</th><th>Colour</th></tr>
-        </thead>
-        <tbody>
-          ${list.map(item => `
-            <tr class="hover:bg-gray-600">
-              <td>${item.issueNumber}</td>
-              <td>${item.number}</td>
-              <td>${item.colour}</td>
-            </tr>`).join('')}
-        </tbody>`;
+        <thead class="bg-blue-600 text-black"><tr><th>Issue</th><th>Number</th><th>Colour</th></tr></thead>
+        <tbody>${list.map(i => `
+          <tr class="hover:bg-gray-600"><td>${i.issueNumber}</td><td>${i.number}</td><td>${i.colour}</td></tr>
+        `).join('')}</tbody>`;
       gameDataContainer.appendChild(table);
     }
 
     async function fetchAndAnalyzeRepeatedly(repeats = 10) {
       let finalResult = null, bestList = [], maxConfidence = 0;
-
-      // কনফিডেন্স ১০০% এবং ৯৫% গুলো গোনা হবে
-      let count100 = 0;
-      let count95 = 0;
+      let count100 = 0, count95 = 0;
 
       for (let i = 0; i < repeats; i++) {
         try {
@@ -215,20 +170,20 @@
           });
           const data = await res.json();
           const list = data?.data?.list;
-          if (!list) continue;
+          if (!list || !list.length) continue;
+
+          const currentIssue = list[0].issueNumber;
+          if (currentIssue === lastIssueNumber) return;
+          lastIssueNumber = currentIssue;
 
           const custom = detectCustomPattern(list);
           let result = analyze(list);
           if (custom) result = { ...result, ...custom };
 
-          // কনফিডেন্সের মোট যোগফল
-          let conf = result.confidenceBS + result.confidenceColor;
-
-          // কনফিডেন্স ১০০% হলে কাউন্ট বাড়াও
+          const conf = result.confidenceBS + result.confidenceColor;
           if(result.confidenceBS === 100 || result.confidenceColor === 100) count100++;
           else if(result.confidenceBS >= 95 || result.confidenceColor >= 95) count95++;
 
-          // count100 বা count95 ৫ বা ৬ হলে ফাইনাল ১০০% দেখাও
           if(count100 >= 5 || count95 >= 6) {
             result.confidenceBS = 100;
             result.confidenceColor = 100;
@@ -237,15 +192,13 @@
             break;
           }
 
-          // অন্যথায় যেই maxConfidence সবচেয়ে বেশি
           if (conf > maxConfidence) {
             maxConfidence = conf;
             finalResult = result;
             bestList = list;
           }
 
-          // ১০০ পার্সেন্ট হলে লুপ বন্ধ করো
-          if (result.confidenceBS >= 100 || result.confidenceColor >= 100) break;
+          if (result.confidenceBS === 100 || result.confidenceColor === 100) break;
 
         } catch (err) { console.error("Fetch error", err); }
       }
@@ -253,28 +206,19 @@
       if (finalResult && bestList.length) {
         renderInfo(finalResult);
         renderTable(bestList);
-        const marketLatest = bestList[0];
-        const actualNumber = Number(marketLatest.number);
-        const actualColor = marketLatest.colour.toLowerCase().split(',')[0];
-        appendToWindows(marketLatest.issueNumber, actualNumber, actualColor, finalResult);
+        const latest = bestList[0];
+        appendToWindows(latest.issueNumber, Number(latest.number), latest.colour.toLowerCase().split(',')[0], finalResult);
       }
     }
 
-    // New Timer Code (Replacing startTimer)
     function updateTimer() {
-      let now = new Date();
-      let startHour = 5, startMinute = 30;
-      let startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute, 0);
-      let elapsedSeconds = Math.floor((now - startTime) / 1000);
-      if (elapsedSeconds < 0) {
-        startTime.setDate(startTime.getDate() - 1);
-        elapsedSeconds = Math.floor((now - startTime) / 1000);
-      }
-      let remainingSeconds = 30 - (elapsedSeconds % 30);
-      document.getElementById("timer").innerText = `00:${String(remainingSeconds).padStart(2, '0')}`;
-      if (remainingSeconds === 30) {
-        fetchAndAnalyzeRepeatedly();
-      }
+      const now = new Date();
+      const base = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 5, 30, 0);
+      if (now < base) base.setDate(base.getDate() - 1);
+      const elapsed = Math.floor((now - base) / 1000);
+      const remain = 30 - (elapsed % 30);
+      document.getElementById("timer").innerText = `00:${String(remain).padStart(2, '0')}`;
+      if (remain === 30) fetchAndAnalyzeRepeatedly();
       setTimeout(updateTimer, 1000);
     }
 
